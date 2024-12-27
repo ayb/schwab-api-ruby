@@ -2,16 +2,21 @@ require 'schwab/authentication'
 require 'schwab/client'
 require 'schwab/error'
 require 'schwab/version'
+require 'schwab/operations/get_account'
+require 'schwab/operations/get_accounts'
 require 'schwab/operations/get_instrument'
+require 'schwab/operations/get_option_chain'
+require 'schwab/operations/get_orders'
 require 'schwab/operations/get_price_history'
 require 'schwab/operations/get_quotes'
+require 'schwab/operations/get_transactions'
 
 module Schwab
   class Client
     include Schwab::Authentication
     include Schwab::Error
 
-    def initialize(**args)
+    def initialize(args)
       @access_token = args[:access_token]
       @refresh_token = args[:refresh_token]
       @access_token_expires_at = args[:access_token_expires_at]
@@ -33,5 +38,24 @@ module Schwab
       Operations::GetQuotes.new(self).call(symbols:, **options)
     end
 
+    def get_accounts
+      Operations::GetAccounts.new(self).call
+    end
+
+    def get_account(account_id)
+      Operations::GetAccount.new(self).call(account_id)
+    end
+
+    def get_option_chain(symbol, **options)
+      Operations::GetOptionChain.new(self).call(symbol, options)
+    end
+
+    def get_orders(account_id = nil)
+      Operations::GetOrders.new(self).call(account_id)
+    end
+
+    def get_transactions(account_id)
+      Operations::GetTransactions.new(self).call(account_id)
+    end
   end
 end
